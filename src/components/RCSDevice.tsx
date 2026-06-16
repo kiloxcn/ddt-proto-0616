@@ -2194,127 +2194,17 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {statusFilter && (
-                    <button 
-                      onClick={() => setStatusFilter(null)}
-                      className="text-[10px] font-bold text-red-400 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full hover:bg-red-500/20 transition-all cursor-pointer"
-                    >
-                      显示全部 ✕
-                    </button>
-                  )}
                   <div className="text-xs font-bold text-teal-400 px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-full">
-                    {statusFilter ? `已筛选: ${maps.filter(m => m.status === statusFilter).length} 个` : `共计 ${maps.length} 个项目`}
+                    共计 {maps.length} 个项目
                   </div>
                 </div>
               </div>
 
-              {/* Three Situations Active Entry Cards (Gateways) */}
-              <div className="grid grid-cols-3 gap-2.5 my-2.5 shrink-0">
-                {/* 1. 上传中 Card */}
-                <button
-                  onClick={() => {
-                    setMapListPage(1);
-                    setStatusFilter(statusFilter === 'uploading' ? null : 'uploading');
-                  }}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
-                    statusFilter === 'uploading'
-                      ? 'bg-blue-500/15 border-blue-500/50 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)] bg-slate-900/10'
-                      : 'bg-white/[0.02]/50 border-white/5 text-white/50 hover:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-bold uppercase tracking-wider">上传中</span>
-                    <span className={`h-4.5 min-w-4.5 px-1 rounded bg-blue-500/20 text-blue-400 text-[10px] font-black flex items-center justify-center ${
-                      maps.some(m => m.status === 'uploading') ? 'animate-pulse' : ''
-                    }`}>
-                      {maps.filter(m => m.status === 'uploading').length}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 text-[10px] font-black truncate">
-                    {maps.filter(m => m.status === 'uploading').length > 0 ? (
-                      <span className="text-blue-400 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping shrink-0" />
-                        查看上传
-                      </span>
-                    ) : (
-                      <span className="text-white/20">暂无任务</span>
-                    )}
-                  </div>
-                </button>
-
-                {/* 2. 排队中 Card */}
-                <button
-                  onClick={() => {
-                    setMapListPage(1);
-                    setStatusFilter(statusFilter === 'queuing' ? null : 'queuing');
-                  }}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
-                    statusFilter === 'queuing'
-                      ? 'bg-yellow-500/15 border-yellow-500/50 text-yellow-400 shadow-[0_0_12px_rgba(234,179,8,0.15)] bg-slate-900/10'
-                      : 'bg-white/[0.02]/50 border-white/5 text-white/50 hover:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-bold uppercase tracking-wider">排队中</span>
-                    <span className={`h-4.5 min-w-4.5 px-1 rounded bg-yellow-500/20 text-yellow-400 text-[10px] font-black flex items-center justify-center ${
-                      maps.some(m => m.status === 'queuing') ? 'animate-pulse' : ''
-                    }`}>
-                      {maps.filter(m => m.status === 'queuing').length}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 text-[10px] font-black truncate">
-                    {maps.filter(m => m.status === 'queuing').length > 0 ? (
-                      <span className="text-yellow-400 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping shrink-0" />
-                        查看排队
-                      </span>
-                    ) : (
-                      <span className="text-white/20">暂无任务</span>
-                    )}
-                  </div>
-                </button>
-
-                {/* 3. 建图中 Card */}
-                <button
-                  onClick={() => {
-                    setMapListPage(1);
-                    setStatusFilter(statusFilter === 'mapping' ? null : 'mapping');
-                  }}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
-                    statusFilter === 'mapping'
-                      ? 'bg-purple-500/15 border-purple-500/50 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15)] bg-slate-900/10'
-                      : 'bg-white/[0.02]/50 border-white/5 text-white/50 hover:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-bold uppercase tracking-wider">建图中</span>
-                    <span className={`h-4.5 min-w-4.5 px-1 rounded bg-purple-500/20 text-purple-400 text-[10px] font-black flex items-center justify-center ${
-                      maps.some(m => m.status === 'mapping') ? 'animate-pulse' : ''
-                    }`}>
-                      {maps.filter(m => m.status === 'mapping').length}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 text-[10px] font-black truncate">
-                    {maps.filter(m => m.status === 'mapping').length > 0 ? (
-                      <span className="text-purple-400 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping shrink-0" />
-                        查看建图
-                      </span>
-                    ) : (
-                      <span className="text-white/20">暂无任务</span>
-                    )}
-                  </div>
-                </button>
-              </div>
-
               {/* List */}
-              <div className="flex-1 my-2 mx-0.5 overflow-y-auto space-y-4 pr-1 scrollbar-none">
+              <div className="flex-1 my-2 mx-0.5 overflow-hidden space-y-4 pr-1">
                 {(() => {
-                  const MAPS_PER_PAGE = 6;
-                  const filteredMaps = statusFilter 
-                    ? maps.filter(m => m.status === statusFilter)
-                    : maps;
-                  const sortedMaps = filteredMaps.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                  const MAPS_PER_PAGE = 4;
+                  const sortedMaps = maps.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
                   const sliced = sortedMaps.slice((mapListPage - 1) * MAPS_PER_PAGE, mapListPage * MAPS_PER_PAGE);
                   
                   if (sliced.length === 0) {
@@ -2438,11 +2328,8 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
 
               {/* Pagination block */}
               {(() => {
-                const MAPS_PER_PAGE = 6;
-                const filteredMaps = statusFilter 
-                  ? maps.filter(m => m.status === statusFilter)
-                  : maps;
-                const totalPages = Math.ceil(filteredMaps.length / MAPS_PER_PAGE);
+                const MAPS_PER_PAGE = 4;
+                const totalPages = Math.ceil(maps.length / MAPS_PER_PAGE);
                 
                 return (
                   <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-3 flex items-center justify-between shrink-0">
