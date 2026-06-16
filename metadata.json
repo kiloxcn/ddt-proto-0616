@@ -1,0 +1,9 @@
+{
+  "name": "云端建图生态系统 re2",
+  "description": "Integrated solution for robot mapping including RCS device interface, DDT Studio PC client, and cloud mapping services.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
