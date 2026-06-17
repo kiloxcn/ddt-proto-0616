@@ -253,7 +253,7 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
     { id: '2', name: 'DDT_02', createdAt: '2024-04-05 14:20:55', size: '0.8GB', type: 'cloud', status: 'uploaded', duration: 450, isDownloaded: false },
     { id: '1', name: 'DDT_01', createdAt: '2024-04-01 10:30:21', size: '1.2GB', type: 'cloud', status: 'completed', duration: 600, mappingDuration: 900, isDownloaded: false },
   ]);
-  const [statusFilter, setStatusFilter] = useState<'uploading' | 'queuing' | 'mapping' | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>('completed');
   const [selectedMap, setSelectedMap] = useState<MapData | null>(null);
   const [mapListPage, setMapListPage] = useState(1);
   const [wifiPage, setWifiPage] = useState(1);
@@ -2117,10 +2117,10 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
                   className="row-span-2 bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/40 rounded-[32px] flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer group shadow-lg shadow-blue-500/10 p-6"
                 >
                   <div className="text-center w-full flex flex-col items-center justify-center">
-                    <div className="text-[52px] font-black text-white tracking-widest leading-none">
+                    <div className="text-[76px] font-black text-white tracking-widest leading-none whitespace-nowrap">
                       开始
                     </div>
-                    <div className="text-[52px] font-black text-blue-400 tracking-widest leading-none mt-4">
+                    <div className="text-[76px] font-black text-blue-400 tracking-widest leading-none mt-4 whitespace-nowrap">
                       扫图
                     </div>
                   </div>
@@ -2131,23 +2131,25 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
                   onClick={() => { setView('map_list'); setMapListPage(1); }}
                   className="bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-[32px] p-6 flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer text-center group"
                 >
-                  <div className="text-[34px] font-black text-teal-400 tracking-wider flex items-center justify-center gap-3">
-                    最近项目
-                    <span className="text-xl px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-black font-mono">
-                      {maps.length}
-                    </span>
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="text-[60px] font-black text-teal-400 tracking-wider whitespace-nowrap">
+                      最近项目
+                    </div>
+                    <div className="text-3xl px-4 py-1 rounded-full bg-teal-500/20 text-teal-300 font-black font-mono inline-block">
+                      {maps.filter(m => m.status === 'completed').length}/{maps.length}
+                    </div>
                   </div>
                 </button>
 
-                {/* Cell 3: 云端额度流水 */}
+                {/* Cell 3: 建图时长 */}
                 <button 
                   onClick={() => setView('quota_flow')}
                   className="bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-[32px] p-6 flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer text-center group"
                 >
-                  <div className="text-[34px] font-black text-blue-400 tracking-wider">
-                    云建图
+                  <div className="text-[60px] font-black text-blue-400 tracking-wider whitespace-nowrap">
+                    建图时长
                   </div>
-                  <div className="text-sm font-bold text-white/50 mt-2">
+                  <div className="text-2xl font-bold text-white/50 mt-2">
                     剩余 {state.cloudQuota} 分钟
                   </div>
                 </button>
@@ -2157,7 +2159,7 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
                   onClick={() => setView('network_settings')}
                   className="bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-[32px] p-6 flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer text-center group animate-fade-in animate-duration-300"
                 >
-                  <div className="text-[34px] font-black text-purple-400 tracking-wider">
+                  <div className="text-[60px] font-black text-purple-400 tracking-wider whitespace-nowrap">
                     网络设置
                   </div>
                 </button>
@@ -2167,7 +2169,7 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
                   onClick={() => setView('about')}
                   className="bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-[32px] p-6 flex flex-col items-center justify-center transition-all active:scale-[0.98] cursor-pointer text-center group"
                 >
-                  <div className="text-[34px] font-black text-orange-400 tracking-wider">
+                  <div className="text-[60px] font-black text-orange-400 tracking-wider whitespace-nowrap">
                     关于本机
                   </div>
                 </button>
@@ -2190,163 +2192,162 @@ export const RCSDevice: React.FC<RCSDeviceProps> = ({ onLogout }) => {
                     <ChevronLeft size={20} />
                   </button>
                   <div>
-                    <h2 className="text-xl font-black">项目列表</h2>
+                    <h2 className="text-2xl font-black">项目列表</h2>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-xs font-bold text-teal-400 px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-full">
+                  <div className="text-xl font-bold text-teal-400 px-4 py-2 bg-teal-500/10 border border-teal-500/20 rounded-full">
                     共计 {maps.length} 个项目
                   </div>
                 </div>
               </div>
 
+              {/* Filters */}
+              <div className="flex items-center space-x-3 py-4 overflow-x-auto shrink-0 border-b border-white/5">
+                {[
+                  { label: '成功', value: 'completed' },
+                  { label: '上传中', value: 'uploading' },
+                  { label: '排队中', value: 'queuing' },
+                  { label: '建图中', value: 'mapping' },
+                  { label: '失败/取消', value: 'mapping_failed' },
+                ].map(filter => {
+                  const count = maps.filter(m => m.status === filter.value).length;
+                  return (
+                    <button
+                      key={filter.label}
+                      onClick={() => { setStatusFilter(filter.value); setMapListPage(1); }}
+                      className={`px-5 py-2 rounded-full whitespace-nowrap text-xl font-bold transition-colors ${
+                        statusFilter === filter.value 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                      }`}
+                    >
+                      {filter.label} {count}
+                    </button>
+                  );
+                })}
+              </div>
+
               {/* List */}
-              <div className="flex-1 my-2 mx-0.5 overflow-hidden space-y-4 pr-1">
+              <div className="flex-1 my-4 mx-0.5 overflow-hidden">
                 {(() => {
+                  const filteredMaps = maps.filter(m => statusFilter ? m.status === statusFilter : true);
                   const MAPS_PER_PAGE = 4;
-                  const sortedMaps = maps.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                  const sortedMaps = filteredMaps.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
                   const sliced = sortedMaps.slice((mapListPage - 1) * MAPS_PER_PAGE, mapListPage * MAPS_PER_PAGE);
                   
                   if (sliced.length === 0) {
                     return (
                       <div className="h-full flex flex-col items-center justify-center text-center p-6 border border-dashed border-white/5 rounded-2xl bg-slate-900/20">
-                        <FileText size={28} className="text-white/20 mb-2" />
-                        <p className="text-xs font-bold text-white/40">该状态下暂无任何项目数据</p>
+                        <FileText size={48} className="text-white/20 mb-4" />
+                        <p className="text-xl font-bold text-white/40">该状态下暂无任何项目数据</p>
                       </div>
                     );
                   }
 
-                  const grouped: { [dateStr: string]: MapData[] } = {};
-                  sliced.forEach(map => {
-                    const dateStr = map.createdAt.split(' ')[0];
-                    if (!grouped[dateStr]) {
-                      grouped[dateStr] = [];
-                    }
-                    grouped[dateStr].push(map);
-                  });
+                  return (
+                    <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      {sliced.map(map => {
+                        const getReadableDuration = (seconds: number) => {
+                          const min = Math.round(seconds / 60);
+                          return `${min || 1}分钟`;
+                        };
 
-                  const sortedDates = Object.keys(grouped).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+                        return (
+                          <div 
+                            key={map.id} 
+                            onClick={() => {
+                              setSelectedMap(map);
+                              if (map.status === 'uploading' || map.status === 'mapping' || map.status === 'queuing') {
+                                setState(s => ({ ...s, currentMapId: map.id, mappingStatus: map.status, progress: map.progress || 0 }));
+                              }
+                              setView('map_details');
+                            }}
+                            className="relative bg-slate-900/40 hover:bg-slate-800/65 border border-white/5 hover:border-blue-500/30 rounded-3xl overflow-hidden flex items-stretch cursor-pointer group transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
+                          >
+                            <div className="relative w-72 bg-slate-950/80 overflow-hidden shrink-0 border-r border-white/5">
+                              <img 
+                                src={`https://picsum.photos/seed/pointcloud_${map.id}/300/180`}
+                                alt={map.name} 
+                                className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500"
+                                referrerPolicy="no-referrer"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-slate-900/40 pointer-events-none" />
+                              
+                              <div className="absolute top-3 left-3">
+                                <span className={`text-sm px-3 py-1 rounded-xl font-bold uppercase tracking-wide border ${
+                                  map.status === 'completed' ? 'bg-green-500/10 text-green-400 border-green-500/25' : 
+                                  map.status === 'mapping_failed' ? 'bg-red-500/10 text-red-400 border-red-500/25' :
+                                  map.status === 'uploading' ? 'bg-blue-500/10 text-blue-400 border-blue-500/25 animate-pulse' :
+                                  map.status === 'queuing' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25 animate-pulse' :
+                                  map.status === 'mapping' ? 'bg-purple-500/10 text-purple-400 border-purple-500/25 animate-pulse' :
+                                  map.status === 'scanned' ? 'bg-white/5 text-white/40 border-white/10' :
+                                  'bg-blue-500/10 text-blue-400 border-blue-500/25'
+                                }`}>
+                                  {map.status === 'completed' ? '已就绪' : 
+                                   map.status === 'mapping_failed' ? '中断' :
+                                   map.status === 'uploading' ? '上传中' :
+                                   map.status === 'queuing' ? '排队中' :
+                                   map.status === 'mapping' ? '建图中' :
+                                   map.status === 'scanned' ? '已扫描' :
+                                   map.status === 'uploaded' ? '已上传' : '进行中'}
+                                </span>
+                              </div>
+                            </div>
 
-                  const getChineseDateString = (dateStr: string) => {
-                    try {
-                      const [year, month, day] = dateStr.split('-');
-                      return `${year}年${month}月${day}日`;
-                    } catch {
-                      return dateStr;
-                    }
-                  };
-
-                  return sortedDates.map(dateStr => (
-                    <div key={dateStr} className="space-y-2">
-                      <div className="flex items-center gap-2 px-1 text-[11px] font-bold text-white/40 tracking-wider">
-                        <Calendar size={11} className="text-blue-400" />
-                        <span>{getChineseDateString(dateStr)}</span>
-                        <div className="flex-grow h-px bg-white/5 ml-1" />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        {grouped[dateStr].map(map => {
-                          const getReadableDuration = (seconds: number) => {
-                            const min = Math.round(seconds / 60);
-                            return `${min || 1}分钟`;
-                          };
-
-                          return (
-                            <div 
-                              key={map.id} 
-                              onClick={() => {
-                                setSelectedMap(map);
-                                if (map.status === 'uploading' || map.status === 'mapping' || map.status === 'queuing') {
-                                  setState(s => ({ ...s, currentMapId: map.id, mappingStatus: map.status, progress: map.progress || 0 }));
-                                }
-                                setView('map_details');
-                              }}
-                              className="relative bg-slate-900/40 hover:bg-slate-800/65 border border-white/5 hover:border-blue-500/30 rounded-2xl overflow-hidden flex flex-col cursor-pointer group transition-all duration-300 shadow-md hover:shadow-lg active:scale-95"
-                            >
-                              <div className="relative w-full aspect-[1.5] bg-slate-950/80 overflow-hidden shrink-0">
-                                <img 
-                                  src={`https://picsum.photos/seed/pointcloud_${map.id}/300/180`}
-                                  alt={map.name} 
-                                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500"
-                                  referrerPolicy="no-referrer"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent pointer-events-none" />
-                                
-                                <div className="absolute top-1.5 left-1.5">
-                                  <span className={`text-[7.5px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide border ${
-                                    map.status === 'completed' ? 'bg-green-500/10 text-green-400 border-green-500/25' : 
-                                    map.status === 'mapping_failed' ? 'bg-red-500/10 text-red-400 border-red-500/25' :
-                                    map.status === 'uploading' ? 'bg-blue-500/10 text-blue-400 border-blue-500/25 animate-pulse' :
-                                    map.status === 'queuing' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25 animate-pulse' :
-                                    map.status === 'mapping' ? 'bg-purple-500/10 text-purple-400 border-purple-500/25 animate-pulse' :
-                                    map.status === 'scanned' ? 'bg-white/5 text-white/40 border-white/10' :
-                                    'bg-blue-500/10 text-blue-400 border-blue-500/25'
-                                  }`}>
-                                    {map.status === 'completed' ? '已就绪' : 
-                                     map.status === 'mapping_failed' ? '中断' :
-                                     map.status === 'uploading' ? '上传中' :
-                                     map.status === 'queuing' ? '排队中' :
-                                     map.status === 'mapping' ? '建图中' :
-                                     map.status === 'scanned' ? '已扫描' :
-                                     map.status === 'uploaded' ? '已上传' : '进行中'}
-                                  </span>
+                            <div className="p-6 flex-grow flex flex-col justify-between text-left">
+                              <div className="flex items-start justify-between">
+                                <div className="font-black text-xl text-white group-hover:text-blue-400 transition-colors truncate max-w-sm flex items-center gap-3">
+                                  <span className="truncate">{map.name}</span>
+                                  {map.hasSemantics && (
+                                    <span className="text-sm font-bold px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 tracking-wider shrink-0 select-none">
+                                      语义
+                                    </span>
+                                  )}
                                 </div>
-
-                                <div className="absolute bottom-1.5 right-1.5 text-[8px] font-mono text-white/40 bg-slate-950/80 px-1 py-0.2 rounded-sm select-none">
+                                <div className="text-base font-mono text-white/40 bg-slate-950/80 px-3 py-1 rounded select-none">
                                   {map.size}
                                 </div>
                               </div>
-
-                              <div className="p-2.5 flex-grow flex flex-col justify-between text-left space-y-1">
-                                <div className="space-y-0.5">
-                                  <div className="font-black text-xs text-white group-hover:text-blue-400 transition-colors truncate flex items-center gap-1">
-                                    <span className="truncate">{map.name}</span>
-                                    {map.hasSemantics && (
-                                      <span className="text-[7px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 tracking-wider shrink-0 select-none">
-                                        语义
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center justify-between pt-1.5 border-t border-white/5 text-[9px] text-white/40">
-                                  <span className="flex items-center gap-1 text-[8.5px]">
-                                    <span className="w-1 h-1 rounded-full bg-blue-400" />
-                                    <span>{getReadableDuration(map.duration || 0)}</span>
-                                  </span>
-                                  <span className="text-[8px] font-mono opacity-50">{map.createdAt.split(' ')[1]?.slice(0, 5) || ''}</span>
-                                </div>
+                              
+                              <div className="flex items-center justify-between pt-4 border-t border-white/5 text-xl text-white/40 mt-2">
+                                <span className="flex items-center gap-3">
+                                  <span className="w-3 h-3 rounded-full bg-blue-400" />
+                                  <span>{getReadableDuration(map.duration || 0)}</span>
+                                </span>
+                                <span className="font-mono opacity-50">{map.createdAt}</span>
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ));
+                  );
                 })()}
               </div>
 
               {/* Pagination block */}
               {(() => {
+                const filteredMapsForPagination = maps.filter(m => statusFilter ? m.status === statusFilter : true);
                 const MAPS_PER_PAGE = 4;
-                const totalPages = Math.ceil(maps.length / MAPS_PER_PAGE);
+                const totalPages = Math.ceil(filteredMapsForPagination.length / MAPS_PER_PAGE);
                 
                 return (
-                  <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-3 flex items-center justify-between shrink-0">
+                  <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 flex items-center justify-between shrink-0">
                     <button
                       disabled={mapListPage <= 1}
                       onClick={() => setMapListPage(prev => Math.max(prev - 1, 1))}
-                      className="px-4 h-9 bg-white/5 hover:bg-white/10 disabled:opacity-20 text-white text-xs font-bold rounded-xl transition-all disabled:pointer-events-none active:scale-95 cursor-pointer"
+                      className="px-6 h-12 bg-white/5 hover:bg-white/10 disabled:opacity-20 text-white text-xl font-bold rounded-2xl transition-all disabled:pointer-events-none active:scale-95 cursor-pointer"
                     >
                       上一页
                     </button>
-                    <span className="text-white/40 font-black text-xs uppercase tracking-widest font-mono select-none">
+                    <span className="text-white/40 font-black text-xl uppercase tracking-widest font-mono select-none">
                       页码 {mapListPage} / {totalPages || 1}
                     </span>
                     <button
                       disabled={mapListPage >= totalPages || totalPages === 0}
                       onClick={() => setMapListPage(prev => Math.min(prev + 1, totalPages))}
-                      className="px-4 h-9 bg-white/5 hover:bg-white/10 disabled:opacity-20 text-white text-xs font-bold rounded-xl transition-all disabled:pointer-events-none active:scale-95 cursor-pointer"
+                      className="px-6 h-12 bg-white/5 hover:bg-white/10 disabled:opacity-20 text-white text-xl font-bold rounded-2xl transition-all disabled:pointer-events-none active:scale-95 cursor-pointer"
                     >
                       下一页
                     </button>
